@@ -3,12 +3,19 @@ const Trades = require("../models/trades");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-  let whereCond = {};
-  if (req.params.type) {
-    whereCond.type = req.params.type;
+  var whereCond = {};
+  if (req.query.type) {
+    whereCond.type = req.query.type;
+  }
+  if (req.query.user_id) {
+    whereCond.user_id = req.query.user_id;
   }
 
-  Trades.findAll({ where: { whereCond } })
+  // console.log("whereCond");
+  // console.log(whereCond);
+  // console.log(req.query);
+
+  Trades.findAll({ where: whereCond })
     .then((result) => {
       return res.status(200).send(result);
     })
@@ -18,29 +25,28 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/:id", (req, res, next) => {
-  Trades.findAll({ where: { id: req.params.id } })
+  Trades.findOne({ where: { id: req.params.id } })
     .then((result) => {
       if (!result) {
-        return Promise.reject("No data found!");
+        return res.status(404).send("ID not found");
       }
       return res.status(200).send(result);
     })
     .catch((err) => {
-      res.status(400).send("Unable to fetch records");
-      next(err);
+      return res.status(400).send("Unable to fetch records");
     });
 });
 
 router.delete("/:id", (req, res, next) => {
-  res.status(500).send("Unable to fetch records");
+  res.status(405).send("Unable to fetch records");
   next();
 });
 router.put("/:id", (req, res, next) => {
-  res.status(500).send("Unable to fetch records");
+  res.status(405).send("Unable to fetch records");
   next();
 });
 router.patch("/:id", (req, res, next) => {
-  res.status(500).send("Unable to fetch records");
+  res.status(405).send("Unable to fetch records");
   next();
 });
 
