@@ -1,5 +1,5 @@
 const express = require("express");
-const { Trades } = require("../models/trades");
+const Trades = require("../models/trades");
 const router = express.Router();
 
 router.get("/trades", (req, res, next) => {
@@ -62,18 +62,13 @@ router.post("/", async (req, res, next) => {
     res.status(400).send("Invalid");
   }
 
-  //const trade = await  new Trades((TradeObj);
-
-  const Trades_model = new Trades(TradeObj);
-  Trades_model.save().then((result) => {
-    Todo.findAll().then((data) => {
-      res.status(200).json({ ok: true, text: data });
+  Trades.sync()
+    .then(function () {
+      return Trades.create(TradeObj);
+    })
+    .then(function (data) {
+      res.status(200).json(data);
     });
-  });
-
-  //   if (trade) {
-  //     res.status(201).json(result);
-  //   }
 });
 
 module.exports = router;
