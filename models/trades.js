@@ -26,7 +26,7 @@ module.exports = sequelize.define(
     },
     symbol: {
       type: Sequelize.STRING,
-      field: "user_id",
+      field: "symbol",
     },
     shares: {
       type: Sequelize.INTEGER(11),

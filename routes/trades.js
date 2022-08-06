@@ -3,16 +3,17 @@ const Trades = require("../models/trades");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-  Trades.findAll()
+  let whereCond = {};
+  if (req.params.type) {
+    whereCond.type = req.params.type;
+  }
+
+  Trades.findAll({ where: { whereCond } })
     .then((result) => {
-      if (!result) {
-        return Promise.reject("No data found!");
-      }
-      res.status(200).json(result);
+      return res.status(200).send(result);
     })
     .catch((err) => {
-      res.status(400).send("Unable to fetch records");
-      next(err);
+      return res.status(400).send("Unable to fetch records");
     });
 });
 
@@ -22,7 +23,7 @@ router.get("/:id", (req, res, next) => {
       if (!result) {
         return Promise.reject("No data found!");
       }
-      return res.status(200).json(result);
+      return res.status(200).send(result);
     })
     .catch((err) => {
       res.status(400).send("Unable to fetch records");
@@ -56,32 +57,29 @@ router.post("/", async (req, res, next) => {
 
   const TradeObj = {
     type: req.body.type,
-    user_id: req.body.user_id,
     symbol: req.body.symbol,
+    user_id: req.body.user_id,
     shares: req.body.shares,
     price: req.body.price,
-    timestamp: 1531522701000,
   };
-  if (TradeObj.shares > 100) {
-    res.status(400).send("Invalid");
-    next();
+  if (TradeObj.shares >= 100) {
+    return res.status(400).send("Invalid");
   }
-  if (TradeObj.shares < 0) {
-    res.status(400).send("Invalid");
-    next();
+  if (TradeObj.shares <= 0) {
+    return res.status(400).send("Invalid");
   }
   if (TradeObj.type != "buy" && TradeObj.type != "sell") {
-    res.status(400).send("Invalid");
-    next();
+    return res.status(400).send("Invalid");
   }
+
+  TradeObj.timestamp = TradeObj.type == "buy" ? 1531522701000 : 1521522701000;
 
   Trades.create(TradeObj)
     .then(function (data) {
-      res.status(201).json(data);
+      return res.status(201).json(data);
     })
     .catch((err) => {
-      res.status(400).send("Error");
-      next(err);
+      return res.status(400).send("Error");
     });
 });
 
