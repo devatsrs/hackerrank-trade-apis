@@ -19,7 +19,7 @@ router.get("/trades", (req, res, next) => {
     });
 });
 
-router.post("/trades", (req, res, next) => {
+router.post("/", async (req, res, next) => {
   /*
     // - creates a new trade
     // - expects a JSON trade object without an id property as a body payload. 
@@ -37,7 +37,7 @@ router.post("/trades", (req, res, next) => {
   //     "price": 134,
   //     "timestamp": 1531522701000
   // }
-
+  const d = new Date();
   const timestamp = new Date(
     d.getFullYear(),
     d.getMonth(),
@@ -47,24 +47,33 @@ router.post("/trades", (req, res, next) => {
   post = req.body;
   console.log(post);
 
-  newTrade = new Trades({
+  const TradeObj = {
     type: req.body.type,
     user_id: req.body.user_id,
     symbol: req.body.symbol,
     shares: req.body.shares,
     price: req.body.price,
     timestamp: timestamp,
-  });
-  if (newTrade.shares && newTrade.shares > 100 && newTrade.shares < 100) {
+  };
+  if (TradeObj.shares >= 0 && TradeObj.shares <= 100) {
     res.status(400).send("Invalid");
   }
-  if (newTrade.type != "buy" && newTrade.type != "sell") {
+  if (TradeObj.type != "buy" && TradeObj.type != "sell") {
     res.status(400).send("Invalid");
   }
 
-  newTrade.save().then((result) => {
-    res.status(201).json(result);
+  //const trade = await  new Trades((TradeObj);
+
+  const Trades_model = new Trades(TradeObj);
+  Trades_model.save().then((result) => {
+    Todo.findAll().then((data) => {
+      res.status(200).json({ ok: true, text: data });
+    });
   });
+
+  //   if (trade) {
+  //     res.status(201).json(result);
+  //   }
 });
 
 module.exports = router;

@@ -16,7 +16,7 @@ const sequelize = new Sequelize("sqlite::memory:");
 //     "timestamp": 1531522701000
 // }
 
-const Trades = sequelize.define("trades", {
+module.exports = sequelize.define("trades", {
   id: {
     type: Sequelize.INTEGER(11),
     allowNull: false,
@@ -52,7 +52,7 @@ const Trades = sequelize.define("trades", {
 
 //sequelize.sync();
 
-module.exports = Trades;
+//module.exports = Trades;
 
 // module.exports = sequelize.define("trades", {
 //   id: {
