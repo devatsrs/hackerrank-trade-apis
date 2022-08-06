@@ -1,5 +1,4 @@
 const express = require("express");
-const { where } = require("mongoose/lib/model");
 const Trades = require("../models/trades");
 const router = express.Router();
 
@@ -12,16 +11,13 @@ router.get("/", (req, res, next) => {
       res.status(200).json(result);
     })
     .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
       res.status(400).send("Unable to fetch records");
       next(err);
     });
 });
 
 router.get("/:id", (req, res, next) => {
-  Trades.find(where({ id: req.params.id }))
+  Trades.findAll({ where: { id: req.params.id } })
     .then((result) => {
       if (!result) {
         return Promise.reject("No data found!");
@@ -29,10 +25,8 @@ router.get("/:id", (req, res, next) => {
       return res.status(200).json(result);
     })
     .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      return res.status(400).send("Unable to fetch records");
+      res.status(400).send("Unable to fetch records");
+      next(err);
     });
 });
 
@@ -58,7 +52,7 @@ router.post("/", async (req, res, next) => {
   ).getTime();
 
   post = req.body;
-  console.log(post);
+  //   console.log(post);
 
   const TradeObj = {
     type: req.body.type,
@@ -66,7 +60,7 @@ router.post("/", async (req, res, next) => {
     symbol: req.body.symbol,
     shares: req.body.shares,
     price: req.body.price,
-    timestamp: timestamp,
+    timestamp: 1531522701000,
   };
   if (TradeObj.shares > 100) {
     res.status(400).send("Invalid");
@@ -81,12 +75,13 @@ router.post("/", async (req, res, next) => {
     next();
   }
 
-  Trades.sync()
-    .then(function () {
-      return Trades.create(TradeObj);
-    })
+  Trades.create(TradeObj)
     .then(function (data) {
-      return res.status(201).json(data);
+      res.status(201).json(data);
+    })
+    .catch((err) => {
+      res.status(400).send("Error");
+      next(err);
     });
 });
 
