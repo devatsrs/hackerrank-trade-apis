@@ -2,7 +2,7 @@ const express = require("express");
 const Trades = require("../models/trades");
 const router = express.Router();
 
-router.get("/trades", (req, res, next) => {
+router.get("/", (req, res, next) => {
   Trades.findAll()
     .then((result) => {
       if (!result) {
@@ -55,11 +55,14 @@ router.post("/", async (req, res, next) => {
     price: req.body.price,
     timestamp: timestamp,
   };
-  if (TradeObj.shares >= 0 && TradeObj.shares <= 100) {
-    res.status(400).send("Invalid");
+  if (TradeObj.shares > 100) {
+    return res.status(400).send("Invalid");
+  }
+  if (TradeObj.shares < 0) {
+    return res.status(400).send("Invalid");
   }
   if (TradeObj.type != "buy" && TradeObj.type != "sell") {
-    res.status(400).send("Invalid");
+    return res.status(400).send("Invalid");
   }
 
   Trades.sync()
@@ -67,7 +70,7 @@ router.post("/", async (req, res, next) => {
       return Trades.create(TradeObj);
     })
     .then(function (data) {
-      res.status(200).json(data);
+      return res.status(201).json(data);
     });
 });
 
