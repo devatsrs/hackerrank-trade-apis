@@ -1,9 +1,27 @@
 const express = require("express");
+const { where } = require("mongoose/lib/model");
 const Trades = require("../models/trades");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
   Trades.findAll()
+    .then((result) => {
+      if (!result) {
+        return Promise.reject("No data found!");
+      }
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      res.status(400).send("Unable to fetch records");
+      next(err);
+    });
+});
+
+router.get("/:id", (req, res, next) => {
+  Trades.find(where({ id: req.params.id }))
     .then((result) => {
       if (!result) {
         return Promise.reject("No data found!");
