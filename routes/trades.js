@@ -9,7 +9,7 @@ router.get("/", (req, res, next) => {
       if (!result) {
         return Promise.reject("No data found!");
       }
-      res.status(200).json(result);
+      return res.status(200).json(result);
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -26,15 +26,24 @@ router.get("/:id", (req, res, next) => {
       if (!result) {
         return Promise.reject("No data found!");
       }
-      res.status(200).json(result);
+      return res.status(200).json(result);
     })
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
-      res.status(400).send("Unable to fetch records");
-      next(err);
+      return res.status(400).send("Unable to fetch records");
     });
+});
+
+router.delete("/:id", (req, res, next) => {
+  return res.status(500).send("Unable to fetch records");
+});
+router.put("/:id", (req, res, next) => {
+  return res.status(500).send("Unable to fetch records");
+});
+router.patch("/:id", (req, res, next) => {
+  return res.status(500).send("Unable to fetch records");
 });
 
 router.post("/", async (req, res, next) => {
